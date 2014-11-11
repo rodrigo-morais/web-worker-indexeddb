@@ -13,7 +13,7 @@
                 linkRepo = document.createElement('a');
 
             linkRepo.appendChild(document.createTextNode(repo.name));
-            linkRepo.href = repo.html_url;
+            linkRepo.href = repo.url;
             linkRepo.target = '_blank';
 
             repoElement.appendChild(linkRepo);
@@ -35,20 +35,12 @@
 
                 if (e.data.length > 0) {
                     _showRepos(repos);
-                    page = page + 1;
-                    setTimeout(function () {
-                        worker.postMessage({ 'page': page, 'per_page': per_page });
-                    }, time);
-                    
-                }
-                else {
-                    _showRepos(repos);
-                    worker.terminate();
+                    worker.postMessage('');
                 }
 
             }, false);
 
-            worker.postMessage({'page':page, 'per_page': per_page});
+            worker.postMessage('');
         }
     };
 

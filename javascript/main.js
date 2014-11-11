@@ -23,6 +23,12 @@
         });
     };
 
+    var _saveLocal = function (repos) {
+        repos.forEach(function (repo) {
+            localDB.insert(repo);
+        });
+    };
+
     var _findByServer = function () {
         if (window.Worker) {
             var worker = new Worker('javascript/worker/worker.js'),
@@ -35,6 +41,7 @@
 
                 if (e.data.length > 0) {
                     _showRepos(repos);
+                    _saveLocal(repos);
                     worker.postMessage('');
                 }
 

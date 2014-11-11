@@ -44,6 +44,7 @@
                     _saveLocal(repos);
                     worker.postMessage('');
                 }
+
             }, false);
 
             worker.postMessage('');

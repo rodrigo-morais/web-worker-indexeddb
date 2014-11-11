@@ -1,7 +1,8 @@
 ﻿var localDB = (function () {
     var db,
         state = 'close',
-        containsData = false;
+        containsData = false,
+        items;
 
     var _isOpen = function () {
         if (state === 'open') {
@@ -32,6 +33,10 @@
                     else {
                         containsData = true;
                     }
+                });
+
+                _getAll().then(function (_items) {
+                    items = _items;
                 });
             };
 
@@ -86,11 +91,37 @@
         return containsData;
     };
 
+    var _getAll = function (repository) {
+        var transaction = db.transaction(['repositories']),
+            store = transaction.objectStore('repositories'),
+            deferred = Q.defer(),
+            _items = [];
+
+        store.openCursor().onsuccess = function (event) {
+            var item = event.target.result;
+            if (item) {
+                _items.push(item.value);
+                item.continue();
+            }
+            else {
+                deferred.resolve(_items);
+            }
+        };
+
+        return deferred.promise;
+
+    };
+
+    var _getItems = function () {
+        return items;
+    };
+
     return {
         init: _init,
         isOpen: _isOpen,
         insert: _insert,
-        hasData: _hasData
+        hasData: _hasData,
+        getItems: _getItems
     };
 
 })();

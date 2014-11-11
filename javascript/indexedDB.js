@@ -1,6 +1,7 @@
 ﻿var localDB = (function () {
     var db,
-        state = 'close';
+        state = 'close',
+        containsData = false;
 
     var _isOpen = function () {
         if (state === 'open') {
@@ -23,6 +24,15 @@
             request.onsuccess = function (event) {
                 db = event.target.result;
                 state = 'open';
+
+                _count().then(function (count) {
+                    if (count === 0) {
+                        containsData = false;
+                    }
+                    else {
+                        containsData = true;
+                    }
+                });
             };
 
             request.onupgradeneeded = function (event) {
@@ -47,18 +57,40 @@
         request = store.add(repository);
 
         request.onsuccess = function (event) {
-            console.log('Repository "' + repository.name + '" added in local database.');
+            //console.log('Repository "' + repository.name + '" added in local database.');
         };
 
         request.onerror = function (event) {
-            console.log('Error when added repository "' + repository.name + '" in local database.');
+            //console.log('Error when added repository "' + repository.name + '" in local database.');
         };
+    };
+
+    var _count = function () {
+        var transaction = db.transaction(['repositories']),
+            store = transaction.objectStore('repositories'),
+            count = store.count(),
+            deferred = Q.defer();
+
+        count.onsuccess = function (event) {
+            deferred.resolve(count.result);
+        };
+
+        count.onerror = function (event) {
+            deferred.resolve(0);
+        };
+
+        return deferred.promise;
+    };
+
+    var _hasData = function () {
+        return containsData;
     };
 
     return {
         init: _init,
         isOpen: _isOpen,
-        insert: _insert
+        insert: _insert,
+        hasData: _hasData
     };
 
 })();

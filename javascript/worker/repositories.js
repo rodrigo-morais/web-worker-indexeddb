@@ -1,5 +1,5 @@
 ﻿importScripts('jquery.hive.pollen.js');
-importScripts('q.js');
+importScripts('../q.js');
 
 var repositories = (function () {
 
@@ -38,7 +38,7 @@ var repositories = (function () {
             }
         });
 
-        return deferred.promise;;
+        return deferred.promise;
     };
 
     var _findAndVerify = function () { }

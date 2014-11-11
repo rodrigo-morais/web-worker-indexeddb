@@ -2,7 +2,16 @@
     'use strict';
 
     var _showData = function () {
-        _findByServer();
+        localDB.init().then(function () {
+            if (localDB.hasData()) {
+                _findByLocal();
+            }
+            else {
+                _findByServer();
+            }
+        }, function (error) {
+            _findByServer();
+        });
     };
 
     var _showRepos = function (repos) {
@@ -49,6 +58,10 @@
 
             worker.postMessage('');
         }
+    };
+
+    var _findByLocal = function () {
+        _showRepos(localDB.getItems());
     };
 
     var _load = function () {

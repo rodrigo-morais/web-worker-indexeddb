@@ -14,12 +14,16 @@
     }
 
     var _init = function () {
+        var deferred = Q.defer();
+
         if (window.indexedDB) {
             var request = window.indexedDB.open("github", 3);
 
             request.onerror = function (event) {
                 console.log('Error when open IndexedDB.');
                 state = 'close';
+
+                deferred.resolve();
             };
 
             request.onsuccess = function (event) {
@@ -29,14 +33,15 @@
                 _count().then(function (count) {
                     if (count === 0) {
                         containsData = false;
+                        deferred.resolve();
                     }
                     else {
                         containsData = true;
+                        _getAll().then(function (_items) {
+                            items = _items;
+                            deferred.resolve();
+                        });
                     }
-                });
-
-                _getAll().then(function (_items) {
-                    items = _items;
                 });
             };
 
@@ -47,6 +52,8 @@
                     newVersion.createObjectStore('repositories', { keyPath: 'id' });
                 }
             };
+
+            return deferred.promise;
         }
     };
 
@@ -125,5 +132,3 @@
     };
 
 })();
-
-localDB.init();

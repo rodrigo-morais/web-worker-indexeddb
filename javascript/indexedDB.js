@@ -63,8 +63,8 @@
             store = transaction.objectStore('repositories'),
             request;
 
-        repository.created_at = now;
-        repository.updated_at = now;
+        repository.inserted_at = now.toISOString();
+        repository.changed_at = now.toISOString();
 
         request = store.add(repository);
 

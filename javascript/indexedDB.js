@@ -77,6 +77,22 @@
         };
     };
 
+    var _remove = function (repository) {
+        var transaction = db.transaction(['repositories'], 'readwrite'),
+            store = transaction.objectStore('repositories'),
+            request;
+
+        request = store.delete(repository.id);
+
+        request.onsuccess = function (event) {
+            //console.log('Repository "' + repository.name + '" removed in local database.');
+        };
+
+        request.onerror = function (event) {
+            //console.log('Error when removed repository "' + repository.name + '" in local database.');
+        };
+    };
+
     var _count = function () {
         var transaction = db.transaction(['repositories']),
             store = transaction.objectStore('repositories'),
@@ -127,6 +143,7 @@
         init: _init,
         isOpen: _isOpen,
         insert: _insert,
+        remove: _remove,
         hasData: _hasData,
         getItems: _getItems
     };
